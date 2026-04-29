@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cuidados Paliativos - Parte 3</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animaciones personalizadas */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.3s ease-out forwards;
+        }
+        
+        /* Ocultar elementos */
+        .hidden-view {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Vista del Test -->
+    <div id="test-view" class="flex-1 flex flex-col w-full h-full">
+        <!-- Barra Superior -->
+        <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-10 shadow-md w-full">
+            <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <h1 class="text-lg font-semibold text-gray-200 flex items-center gap-2">
+                    <span>Test de Cuidados Paliativos</span>
+                    <span class="bg-amber-900/50 text-amber-300 text-xs py-1 px-2 rounded-full border border-amber-700/50">Parte 3</span>
+                </h1>
+
+                <div class="flex items-center gap-4 text-sm font-medium">
+                    <div class="flex items-center gap-1.5 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
+                        <!-- Icono Check -->
+                        <svg class="w-4 h-4 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span id="correct-count" class="text-green-400">0</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
+                        <!-- Icono X -->
+                        <svg class="w-4 h-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        <span id="incorrect-count" class="text-red-400">0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido Principal -->
+        <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 w-full">
+            <div class="w-full max-w-3xl">
+                
+                <!-- Indicador de Progreso -->
+                <div class="mb-6 flex justify-between items-end">
+                    <span id="progress-text" class="text-sm font-semibold text-amber-400 tracking-wider uppercase">
+                        Pregunta 45 (de 66)
+                    </span>
+                    <div class="w-1/2 bg-gray-800 rounded-full h-2.5 border border-gray-700">
+                        <div id="progress-bar" class="bg-amber-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Pregunta -->
+                <div class="bg-gray-800/80 backdrop-blur rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-700 mb-6 w-full">
+                    <h2 id="question-text" class="text-xl sm:text-2xl font-medium text-white mb-8 leading-relaxed">
+                        <!-- Texto de la pregunta -->
+                    </h2>
+
+                    <div id="options-container" class="flex flex-col gap-3">
+                        <!-- Opciones generadas por JS -->
+                    </div>
+                </div>
+
+                <!-- Botón de Navegación -->
+                <div class="flex justify-end min-h-[3rem]">
+                    <button id="next-btn" onclick="handleNextQuestion()" class="hidden bg-amber-600 hover:bg-amber-500 text-white py-3 px-6 rounded-xl font-semibold flex items-center gap-2 transition-colors shadow-lg animate-fade-in-up">
+                        <span id="next-btn-text">Siguiente Pregunta</span>
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
+            </div>
+        </main>
+        
+        <!-- Pie de página con aviso -->
+        <footer class="text-center p-4 text-xs text-gray-500">
+            <p class="flex justify-center items-center gap-1">
+                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Nota: Las respuestas correctas han sido inferidas a falta de plantilla. El propósito de esta web es formativo.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Vista de Resultados Finales -->
+    <div id="results-view" class="hidden-view min-h-screen flex flex-col items-center justify-center p-4 w-full h-full">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-xl max-w-lg w-full text-center border border-gray-700">
+            <h1 class="text-3xl font-bold text-white mb-6">¡Test Finalizado!</h1>
+            <p class="text-gray-400 mb-6">Parte 3 (Preguntas 45 a 66)</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center justify-center">
+                    <span id="final-score" class="text-3xl font-bold text-white mb-1">0%</span>
+                    <span class="text-sm text-gray-400">Puntuación</span>
+                </div>
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center justify-center">
+                    <svg class="w-8 h-8 text-green-400 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span class="text-sm text-gray-400">Correctas</span>
+                    <span id="final-correct" class="text-xl font-bold text-green-400">0</span>
+                </div>
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center justify-center">
+                    <svg class="w-8 h-8 text-red-400 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <span class="text-sm text-gray-400">Incorrectas</span>
+                    <span id="final-incorrect" class="text-xl font-bold text-red-400">0</span>
+                </div>
+            </div>
+
+            <button onclick="restartTest()" class="w-full py-3 px-6 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                Volver a intentar
+            </button>
+        </div>
+    </div>
+
+    <!-- Lógica JavaScript -->
+    <script>
+        const testQuestions = [
+            {
+                id: 45,
+                text: "cuál corresponde a la valoración cognitiva",
+                options: [
+                    "a. Mini examen cognoscitivo de lobo, Test del informador, Test de Pfeiffer",
+                    "b. Mini examen cognoscitivo de lobo, Test del informador, Test de Pfeiffer, Test de Apgar",
+                    "c. Mini examen cognoscitivo de lobo, Test del informador, Test de Pfeiffer, Escalas categóricas",
+                    "d. Mini examen cognoscitivo de lobo, Test del familiar, Test de Pfeiffer"
+                ],
+                answer: 0
+            },
+            {
+                id: 46,
+                text: "¿qué analgesico coadyuvantes usarias para dolor oseo?",
+                options: [
+                    "a. Corticoides (dexametasona)",
+                    "b. Antidepresivos tricíclicos",
+                    "c. Antiepilépticos",
+                    "d. Bifosfonatos"
+                ],
+                answer: 3
+            },
+            {
+                id: 47,
+                text: "que analgesico opioides tiene techo terapeutico",
+                options: [
+                    "a. Agonistas completos",
+                    "b. Agonistas parciales",
+                    "c. Agonistas-antagonistas mixtos",
+                    "d. Ninguno"
+                ],
+                answer: 1 // Los agonistas parciales (ej. buprenorfina) tienen techo terapéutico.
+            },
+            {
+                id: 48,
+                text: "¿Cuál es un inconveniente de la vía subcutánea?",
+                options: [
+                    "a. Preserva la autonomía del paciente",
+                    "b. Fácil utilización (paciente y familia)",
+                    "c. Menos efectos secundarios",
+                    "d. Reacción adversa al material"
+                ],
+                answer: 3
+            },
+            {
+                id: 49,
+                text: "cuales son las habilidad basicas de comunicacion",
+                options: [
+                    "a. Escucha pasiva Empatía Aceptación y recompensación",
+                    "b. Escucha activa Empatía Negociación y compensación",
+                    "c. Escucha activa Agonía Aceptación y recompensación",
+                    "d. Escucha activa Empatía Aceptación y recompensación"
+                ],
+                answer: 3
+            },
+            {
+                id: 50,
+                text: "¿Cuál no es una ventaja de la vía subcutánea?",
+                options: [
+                    "a. Precisa hospitalización",
+                    "b. Preserva la autonomía del paciente",
+                    "c. Fácil utilización (paciente y familia)",
+                    "d. Menos efectos secundarios"
+                ],
+                answer: 0
+            },
+            {
+                id: 51,
+                text: "cual corresponde a la valoración del trastorno psíquico: ansiedad-depresión",
+                options: [
+                    "a. Escala de goldberg (ansiedad depresión), La escala geriátrica de depresión, Test del informador",
+                    "b. Escala de goldberg (ansiedad depresión), La escala geriátrica de depresión, Mini examen cognoscitivo de lobo",
+                    "c. Escala de goldberg (ansiedad depresión), La escala geriátrica de depresión, Test de Pfeiffer",
+                    "d. Escala de goldberg (ansiedad depresión), La escala geriátrica de depresión"
+                ],
+                answer: 3
+            },
+            {
+                id: 52,
+                text: "que analgesico opioides está contraindicado con opioides completos?",
+                options: [
+                    "a. Agonistas completos",
+                    "b. Agonistas parciales",
+                    "c. Agonistas-antagonistas mixtos",
+                    "d. Ninguno"
+                ],
+                answer: 1 // Los parciales (y mixtos) compiten por el receptor y pueden desencadenar síndrome de abstinencia o restar efecto.
+            },
+            {
+                id: 53,
+                text: "cual no corresponde a la valoración del trastorno psíquico: ansiedad-depresión",
+                options: [
+                    "a. Escala de Goldberg",
+                    "b. Escala geriátrica de depresión",
+                    "c. Mini examen cognoscitivo de lobo",
+                    "d. a y b"
+                ],
+                answer: 2 // El de Lobo es para valoración cognitiva, no psíquica. (Texto limpiado de errores tipográficos).
+            },
+            {
+                id: 54,
+                text: "cual no es un efecto adverso de los anagesicos opioides?",
+                options: [
+                    "a. náuseas",
+                    "b. vómito",
+                    "c. vértigo",
+                    "d. confusión"
+                ],
+                answer: 2 // El vértigo es menos frecuente comparado con náuseas, vómitos, estreñimiento o confusión.
+            },
+            {
+                id: 55,
+                text: "cual es una fase de la empatía en el duelo",
+                options: [
+                    "a. Interiorización de la situación laboral que vive el otro",
+                    "b. Expresión que da a entender al locutor esta comprensión",
+                    "c. Interiorización de la situación emocional que vive el otro",
+                    "d. Expresión que da a entender al receptor esta expansión"
+                ],
+                answer: 2
+            },
+            {
+                id: 56,
+                text: "¿que analgesico coadyuvantes usarias para mejorar el apetito?",
+                options: [
+                    "a. Corticoides (dexametasona)",
+                    "b. Antidepresivos tricíclicos",
+                    "c. Antiepilépticos",
+                    "d. Bifosfonatos"
+                ],
+                answer: 0
+            },
+            {
+                id: 57,
+                text: "quién dijo: “Son en las misteriosas ecuaciones del amor puede encontrarse alguna lógica”",
+                options: [
+                    "a. John Nash- Premio Nobel, 1994",
+                    "b. Organización Mundial de la Salud",
+                    "c. (G. Marañón)",
+                    "d. nadie pudo decir esas palabras"
+                ],
+                answer: 0
+            },
+            {
+                id: 58,
+                text: "¿ A qué valoración pertenece el test de apgar?",
+                options: [
+                    "a. Valoración situación sociofamiliar",
+                    "b. Valoración trastorno psíquico: ansiedad-depresión",
+                    "c. Valoración cognitiva",
+                    "d. Valoración funcional"
+                ],
+                answer: 0 // Apgar familiar
+            },
+            {
+                id: 59,
+                text: "cual no es un estrategia del manual de soporte para cuidadores:",
+                options: [
+                    "a. Fijarse objetivos y expectativas realistas",
+                    "b. Establecer sus propios límites",
+                    "c. Pedir y aceptar ayuda",
+                    "d. Cuidar del paciente"
+                ],
+                answer: 3 // El manual de soporte va dirigido a cuidarse a ellos mismos, el cuidar al paciente es su rol habitual.
+            },
+            {
+                id: 60,
+                text: "la meperidina es:",
+                options: [
+                    "a. Agonistas completos",
+                    "b. Agonistas parciales",
+                    "c. Agonistas-antagonistas mixtos",
+                    "d. Ninguno"
+                ],
+                answer: 0
+            },
+            {
+                id: 61,
+                text: "la muprenorfina es:",
+                options: [
+                    "a. Agonistas completos",
+                    "b. Agonistas parciales",
+                    "c. Agonistas-antagonistas mixtos",
+                    "d. Ninguno"
+                ],
+                answer: 1 // Buprenorfina
+            },
+            {
+                id: 62,
+                text: "quien dijo: “el cuidado activo total de los enfermos cuya enfermedad no responde al tratamiento curativo”",
+                options: [
+                    "a. John Nash- Premio Nobel, 1994",
+                    "b. Organización Mundial de la Salud",
+                    "c. (G. Marañón)",
+                    "d. nadie pudo decir esas palabras"
+                ],
+                answer: 1
+            },
+            {
+                id: 63,
+                text: "¿Cuáles son las escalas de la valoración de síntomas del paciente con cáncer terminal?",
+                options: [
+                    "a. Escalas analógicas visuales",
+                    "b. Escalas categóricas",
+                    "c. Escalas numéricas",
+                    "d. Todas"
+                ],
+                answer: 3
+            },
+            {
+                id: 64,
+                text: "¿que analgesico coadyuvantes usarias para el dolor neuropático lancinante?",
+                options: [
+                    "a. Corticoides (dexametasona)",
+                    "b. Antidepresivos tricíclicos",
+                    "c. Antiepilépticos",
+                    "d. Bifosfonatos"
+                ],
+                answer: 2 // Ej. Pregabalina, Gabapentina.
+            },
+            {
+                id: 65,
+                text: "¿que analgesico coadyuvantes usarias para la compresión medular?",
+                options: [
+                    "a. Corticoides (dexametasona)",
+                    "b. Antidepresivos tricíclicos",
+                    "c. Antiepilépticos",
+                    "d. Bifosfonatos"
+                ],
+                answer: 0
+            },
+            {
+                id: 66,
+                text: "¿Cuál es la vía de administración más usada?",
+                options: [
+                    "a. Oral",
+                    "b. Subcutánea",
+                    "c. Sublingual",
+                    "d. Rectal"
+                ],
+                answer: 0
+            }
+        ];
+
+        // Estado de la aplicación
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let hasAnswered = false;
+        let selectedOption = null;
+
+        // SVGs para inyectar
+        const checkSvg = `<svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+        const xSvg = `<svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+
+        // Referencias del DOM
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progress-bar');
+        const correctCountEl = document.getElementById('correct-count');
+        const incorrectCountEl = document.getElementById('incorrect-count');
+        const nextBtn = document.getElementById('next-btn');
+        const nextBtnText = document.getElementById('next-btn-text');
+        
+        const testView = document.getElementById('test-view');
+        const resultsView = document.getElementById('results-view');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalCorrectEl = document.getElementById('final-correct');
+        const finalIncorrectEl = document.getElementById('final-incorrect');
+
+        // Inicializar
+        function init() {
+            renderQuestion();
+        }
+
+        // Renderizar la pregunta actual
+        function renderQuestion() {
+            const currentQ = testQuestions[currentQuestionIndex];
+            const totalQ = testQuestions.length;
+            const lastQId = testQuestions[totalQ - 1].id;
+
+            // Actualizar textos y progreso
+            questionTextEl.textContent = currentQ.text;
+            progressText.textContent = `Pregunta ${currentQ.id} (de ${lastQId})`;
+            
+            const progressPercent = ((currentQuestionIndex + 1) / totalQ) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            // Limpiar opciones
+            optionsContainer.innerHTML = '';
+
+            // Generar botones de opciones
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                
+                // Clases por defecto (estado no respondido)
+                let baseClasses = "w-full text-left p-4 rounded-xl border transition-all duration-200 ";
+                
+                if (!hasAnswered) {
+                    baseClasses += "bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-200 cursor-pointer";
+                } else {
+                    const isCorrect = index === currentQ.answer;
+                    const isSelected = index === selectedOption;
+
+                    if (isCorrect) {
+                        baseClasses += "bg-green-900/50 border-green-500 text-green-100";
+                    } else if (isSelected && !isCorrect) {
+                        baseClasses += "bg-red-900/50 border-red-500 text-red-100";
+                    } else {
+                        baseClasses += "bg-gray-800 border-gray-700 text-gray-500 opacity-50 cursor-default";
+                    }
+                    btn.disabled = true;
+                }
+
+                btn.className = baseClasses;
+                
+                // Evento click
+                if (!hasAnswered) {
+                    btn.onclick = () => handleOptionClick(index);
+                }
+
+                // Contenido interno del botón
+                let innerHtml = `
+                    <div class="flex items-start gap-3">
+                        <div class="flex-1 text-sm sm:text-base leading-relaxed">${option}</div>
+                `;
+
+                // Añadir iconos si ya se ha respondido
+                if (hasAnswered) {
+                    if (index === currentQ.answer) {
+                        innerHtml += checkSvg;
+                    } else if (index === selectedOption) {
+                        innerHtml += xSvg;
+                    }
+                }
+
+                innerHtml += `</div>`;
+                btn.innerHTML = innerHtml;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Lógica del botón siguiente
+            if (hasAnswered) {
+                nextBtn.classList.remove('hidden');
+                nextBtn.classList.add('flex');
+                if (currentQuestionIndex < totalQ - 1) {
+                    nextBtnText.textContent = "Siguiente Pregunta";
+                } else {
+                    nextBtnText.textContent = "Ver Resultados";
+                }
+            } else {
+                nextBtn.classList.add('hidden');
+                nextBtn.classList.remove('flex');
+            }
+        }
+
+        // Manejar click en opción
+        function handleOptionClick(index) {
+            if (hasAnswered) return;
+
+            selectedOption = index;
+            hasAnswered = true;
+
+            if (index === testQuestions[currentQuestionIndex].answer) {
+                correctAnswers++;
+                correctCountEl.textContent = correctAnswers;
+            } else {
+                incorrectAnswers++;
+                incorrectCountEl.textContent = incorrectAnswers;
+            }
+
+            renderQuestion(); // Re-renderizar para mostrar los colores e iconos
+        }
+
+        // Manejar botón siguiente
+        function handleNextQuestion() {
+            if (currentQuestionIndex < testQuestions.length - 1) {
+                currentQuestionIndex++;
+                selectedOption = null;
+                hasAnswered = false;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Mostrar pantalla final
+        function showResults() {
+            testView.classList.add('hidden-view');
+            resultsView.classList.remove('hidden-view');
+
+            const score = Math.round((correctAnswers / testQuestions.length) * 100);
+            finalScoreEl.textContent = `${score}%`;
+            finalCorrectEl.textContent = correctAnswers;
+            finalIncorrectEl.textContent = incorrectAnswers;
+        }
+
+        // Reiniciar test
+        function restartTest() {
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            hasAnswered = false;
+            selectedOption = null;
+
+            correctCountEl.textContent = "0";
+            incorrectCountEl.textContent = "0";
+
+            resultsView.classList.add('hidden-view');
+            testView.classList.remove('hidden-view');
+
+            renderQuestion();
+        }
+
+        // Iniciar la app al cargar
+        init();
+    </script>
+</body>
+</html>
